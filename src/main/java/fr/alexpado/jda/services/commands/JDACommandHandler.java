@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 public class JDACommandHandler extends ListenerAdapter implements ICommandHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(JDACommandHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JDACommandHandler.class);
 
     private final IDiscordBot           discordBot;
     private final Map<String, ICommand> commandMap;
@@ -52,11 +52,11 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
         this.prefix     = prefix;
 
         if (this.prefix.isEmpty()) {
-            logger.warn("Invalid prefix used: Empty prefix shouldn't be used, as it would match every single message.");
+            LOGGER.warn("Invalid prefix used: Empty prefix shouldn't be used, as it would match every single message.");
             throw new IllegalArgumentException("Unable to create CommandHandler: Invalid prefix.");
         }
 
-        logger.info("A new command handler has been created with the prefix {}.", this.prefix);
+        LOGGER.info("A new command handler has been created with the prefix {}.", this.prefix);
     }
 
     /**
@@ -89,7 +89,7 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
     public void register(@NotNull String label, @NotNull ICommand command) {
 
         if (this.getCommand(label).isPresent()) {
-            logger.warn("A module tried to register the command '{}' which is already registered.", label);
+            LOGGER.warn("A module tried to register the command '{}' which is already registered.", label);
             throw new IllegalArgumentException(String.format("The `%s` is already registered.", label));
         }
         this.commandMap.put(label, command);
@@ -116,10 +116,10 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
     @Override
     public void handle(@NotNull GuildMessageReceivedEvent event) {
 
-        logger.debug("handle() called. Processing command.");
+        LOGGER.debug("handle() called. Processing command.");
         String message = event.getMessage().getContentRaw().toLowerCase();
         String label   = message.split(" ")[0].replace(this.prefix.toLowerCase(), "");
-        logger.debug("Detected '{}' label.", label);
+        LOGGER.debug("Detected '{}' label.", label);
 
         Optional<ICommand> optionalCommand = this.getCommand(label);
 
@@ -135,11 +135,11 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
 
         if (!commandEvent.isCancelled()) {
             command.execute(event);
-            logger.debug("The command '{}' has been successfully executed.", label);
+            LOGGER.debug("The command '{}' has been successfully executed.", label);
             return;
         }
 
-        logger.debug("Command execution cancelled.");
+        LOGGER.debug("Command execution cancelled.");
     }
 
     /**

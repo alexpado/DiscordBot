@@ -30,7 +30,7 @@ import java.util.*;
  */
 public abstract class JDACommand implements ICommand {
 
-    private static final Logger logger = LoggerFactory.getLogger(JDACommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JDACommand.class);
 
     private final IDiscordBot               bot;
     private final Map<Method, List<String>> syntaxMap;
@@ -99,7 +99,7 @@ public abstract class JDACommand implements ICommand {
         String       message   = event.getMessage().getContentRaw();
         List<String> userInput = Arrays.asList(message.split(" "));
 
-        logger.info("Trying to match '{}'", userInput.subList(1, userInput.size()));
+        LOGGER.info("Trying to match '{}'", userInput.subList(1, userInput.size()));
 
         IMatchingResult<Method> matchingResult = this.getMatch(String.join(" ", userInput.subList(1, userInput.size())));
         Method                  exec           = matchingResult.getIdentifier();

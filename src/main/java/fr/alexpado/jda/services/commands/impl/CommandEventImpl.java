@@ -89,6 +89,6 @@ public class CommandEventImpl implements ICommandEvent {
     @Override
     public GuildMessageReceivedEvent getEvent() {
 
-        return event;
+        return this.event;
     }
 }

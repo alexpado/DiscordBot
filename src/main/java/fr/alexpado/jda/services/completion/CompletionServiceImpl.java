@@ -308,7 +308,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
         return ts;
     }
 
-    private List<String> collectCompletion(List<T> identifiers, List<String> input) {
+    private List<String> collectCompletion(Collection<T> identifiers, List<String> input) {
         return identifiers.stream()
                 .map(identifier -> this
                         .getIdentifierSyntaxAt(identifier, input.size() - 1))

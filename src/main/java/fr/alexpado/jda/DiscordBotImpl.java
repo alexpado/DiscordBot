@@ -26,7 +26,7 @@ import java.util.Collection;
  */
 public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscordBot {
 
-    private static final Logger          logger = LoggerFactory.getLogger(DiscordBotImpl.class);
+    private static final Logger          LOGGER = LoggerFactory.getLogger(DiscordBotImpl.class);
     private final        ICommandHandler commandHandler;
     private final        JDABuilder      jdaBuilder;
 
@@ -74,7 +74,7 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
             this.jdaBuilder.setToken(token);
             this.jdaBuilder.build();
         } catch (LoginException e) {
-            logger.warn("Unable to connect to Discord. The token provided is probably invalid.", e);
+            LOGGER.warn("Unable to connect to Discord. The token provided is probably invalid.", e);
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
     @Override
     public void onCommandNotFound(@NotNull GuildMessageReceivedEvent event, @NotNull String label) {
 
-        logger.debug("User {} tried to execute the command {}.", event.getAuthor().getIdLong(), label);
+        LOGGER.debug("User {} tried to execute the command {}.", event.getAuthor().getIdLong(), label);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
     @Override
     public void onCommandExecuted(@NotNull ICommandEvent event) {
 
-        logger.debug("The {} command will be executed by user {}.", event.getLabel(), event.getEvent()
+        LOGGER.debug("The {} command will be executed by user {}.", event.getLabel(), event.getEvent()
                                                                                            .getAuthor()
                                                                                            .getIdLong());
     }
