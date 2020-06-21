@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group 'fr.alexpado.jda'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    implementation group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
+    compileOnly group: 'org.json', name: 'json', version: '20190722'
+    implementation 'net.dv8tion:JDA:4.1.1_165'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0-alpha1'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.0-alpha1'
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar) {
+
+    if (project.hasProperty('destinationPath')) {
+        destinationDirectory = file(project.property('destinationPath'))
+    }
+
+    if (project.hasProperty('destinationName')) {
+        archiveFileName = project.property('destinationName') + '.jar'
+    }
+
+}
