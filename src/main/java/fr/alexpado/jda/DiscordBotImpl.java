@@ -78,6 +78,7 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
         }
     }
 
+    @Override
     public ICommandHandler getCommandHandler() {
 
         return this.commandHandler;

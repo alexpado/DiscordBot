@@ -41,4 +41,11 @@ public interface IDiscordBot {
      */
     void login(String token);
 
+    /**
+     * Retrieve the {@link ICommandHandler} in use for this {@link IDiscordBot}.
+     *
+     * @return An {@link ICommandHandler} implementation.
+     */
+    ICommandHandler getCommandHandler();
+
 }
