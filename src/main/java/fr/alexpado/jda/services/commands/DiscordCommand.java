@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,20 +29,20 @@ import java.util.*;
  *
  * @author alexpado
  */
-public abstract class JDACommand implements ICommand {
+public abstract class DiscordCommand implements ICommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JDACommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordCommand.class);
 
     private final IDiscordBot               bot;
     private final Map<Method, List<String>> syntaxMap;
 
     /**
-     * Creates a new {@link JDACommand} instance.
+     * Creates a new {@link DiscordCommand} instance.
      *
      * @param discordBot
      *         The {@link IDiscordBot} associated with this command.
      */
-    protected JDACommand(IDiscordBot discordBot) {
+    protected DiscordCommand(IDiscordBot discordBot) {
 
         this.bot       = discordBot;
         this.syntaxMap = this.getSyntaxMap();
@@ -65,7 +66,8 @@ public abstract class JDACommand implements ICommand {
 
         for (Parameter parameter : method.getParameters()) {
             if (parameter.isAnnotationPresent(Param.class)) {
-                methodParameters.add(matchingResult.getParameter(parameter.getName()));
+                Param param = parameter.getAnnotation(Param.class);
+                methodParameters.add(matchingResult.getParameter(param.value()));
             } else if (paramTypeMap.containsKey(parameter.getType())) {
                 methodParameters.add(paramTypeMap.get(parameter.getType()));
             }
@@ -87,6 +89,17 @@ public abstract class JDACommand implements ICommand {
     }
 
     /**
+     * Retrieves a {@link MessageEmbed} containing all information about how to use this {@link ICommand}.
+     *
+     * @return A {@link MessageEmbed} instance, or null.
+     */
+    @Override
+    public @Nullable MessageEmbed getHelp() {
+
+        return null;
+    }
+
+    /**
      * Execute this {@link ICommand} using data contained the provided {@link GuildMessageReceivedEvent}. If no
      * contained command matched, the {@link #getHelp()} method will be used.
      *
@@ -103,7 +116,7 @@ public abstract class JDACommand implements ICommand {
 
         IMatchingResult<Method> matchingResult = this.getMatch(String.join(" ", userInput.subList(1, userInput.size())));
         Method                  exec           = matchingResult.getIdentifier();
-        List<Object>            parameters     = JDACommand.generateParameterList(matchingResult, exec, event);
+        List<Object>            parameters     = DiscordCommand.generateParameterList(matchingResult, exec, event);
         this.call(exec, parameters);
     }
 
