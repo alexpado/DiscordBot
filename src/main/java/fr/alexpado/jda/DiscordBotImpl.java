@@ -68,7 +68,7 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
      *         The token to use when login in to Discord
      */
     @Override
-    public void login(String token) {
+    public final void login(String token) {
 
         try {
             this.jdaBuilder.setToken(token);
