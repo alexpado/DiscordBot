@@ -12,7 +12,14 @@ import java.lang.annotation.Target;
  * @author alexpado
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 public @interface Param {
+
+    /**
+     * The name of the parameter used in the syntax string.
+     *
+     * @return Variable name
+     */
+    String value();
 
 }
