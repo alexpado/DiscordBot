@@ -11,18 +11,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static fr.alexpado.jda.service.completion.CompletionTestData.assertListEquals;
-import static fr.alexpado.jda.service.completion.CompletionTestData.passThroughInput;
+import static fr.alexpado.jda.service.completion.CompletionTestData.fillerInput;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@DisplayName("Pass Through Completion")
-public class PassThroughCompletionTests {
+@DisplayName("Filler Completion")
+public class FillerCompletionTests {
 
     @Test
     @DisplayName("Unfinished input")
     public void testPassThroughCompletionOnUnfinishedInput() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(passThroughInput());
-        List<String>                results = service.complete("language switch j");
+        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
+        List<String>                results = service.complete("language message j");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -30,8 +31,8 @@ public class PassThroughCompletionTests {
     @DisplayName("Trailing space")
     public void testPassThroughCompleteWithTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(passThroughInput());
-        List<String>                results = service.complete("language switch ");
+        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
+        List<String>                results = service.complete("language message ");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -39,17 +40,17 @@ public class PassThroughCompletionTests {
     @DisplayName("No trailing space")
     public void testPassThroughCompleteWithoutTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(passThroughInput());
-        List<String>                results = service.complete("language switch");
-        assertListEquals(Collections.singletonList("switch"), results);
+        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
+        List<String>                results = service.complete("language message");
+        assertListEquals(Collections.singletonList("message"), results);
     }
 
     @Test
     @DisplayName("Should be empty")
     public void testPassThroughCompleteShouldBeEmpty() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(passThroughInput());
-        List<String>                results = service.complete("language swit ja");
+        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
+        List<String>                results = service.complete("language messa ja");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -57,8 +58,8 @@ public class PassThroughCompletionTests {
     @DisplayName("Should be present")
     public void testPassThroughMatchShouldBePresent() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(passThroughInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language switch java");
+        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
+        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language message Hello You !");
         assertTrue(results.isPresent());
     }
 
@@ -66,18 +67,18 @@ public class PassThroughCompletionTests {
     @DisplayName("Should have a parameter")
     public void testPassThroughMatchShouldHaveParameter() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(passThroughInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language switch yes");
+        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
+        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language message Hello You ! This is a filler for very long string at the end of a command :)");
         assertTrue(results.isPresent());
-        assertEquals("yes", results.get().getParameter("lang"));
+        assertEquals("Hello You ! This is a filler for very long string at the end of a command :)", results.get().getParameter("msg"));
     }
 
     @Test
     @DisplayName("Should not be present (invalid)")
     public void testPassThroughMatchShouldNotBePresentWhenInvalid() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(passThroughInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language swit java");
+        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
+        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language messa java");
         assertFalse(results.isPresent());
     }
 
@@ -85,8 +86,9 @@ public class PassThroughCompletionTests {
     @DisplayName("Should not be present (incomplete)")
     public void testPassThroughMatchShouldNotBePresentWhenIncomplete() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(passThroughInput());
+        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
         Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language swit java");
         assertFalse(results.isPresent());
     }
+
 }

@@ -44,6 +44,14 @@ public class CompletionTestData {
         return input;
     }
 
+    static HashMap<Integer, List<String>> fillerInput() {
+
+        HashMap<Integer, List<String>> input = new HashMap<>();
+        input.put(1, Arrays.asList("language", "switch", "[lang]"));
+        input.put(2, Arrays.asList("language", "message", "msg..."));
+        return input;
+    }
+
     static void assertListEquals(List<String> expected, List<String> actual) {
 
         expected.sort(String::compareTo);
