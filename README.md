@@ -96,12 +96,12 @@ Here comes the power of the templating system ! *(please don't look at the sourc
 
 You can create custom syntax very easy, and there is multiple type !
 
-###### The Regular Syntax
+#### The Regular Syntax
 This is what we already used, one word, and only one can be matched at the position defined !
 
 `guild count` will only match if the user type `guild count` and nothing else!
 
-###### The Pass-Through Syntax
+#### The Pass-Through Syntax
 This one is used when you want to retrieve one word from the user's input.
 
 `guild rename [name]` will match `guild rename Amazing` but also `guild rename EOAEOUNACAECIAYBEPVCIAYEBVCP` !
@@ -138,7 +138,7 @@ You can also use a pass-through syntax between two regulars syntax like so:
     }
 ```
 
-###### The Filler Syntax
+#### The Filler Syntax
 This one is used when you want to retrieve a variable amount of words from your user.
 
 ```java
@@ -168,7 +168,7 @@ repositories {
 Then you can add the dependency:
 
 ```gradle
-    implementation 'com.github.alexpado:DiscordBot:v1.0b1'
+    implementation 'com.github.alexpado:DiscordBot:v1.0b2'
 ```
 
 **Note** The library doesn't include the JDA dependency, you need to add it to your dependencies.
