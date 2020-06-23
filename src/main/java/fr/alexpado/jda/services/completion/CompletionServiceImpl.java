@@ -31,6 +31,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      *         A {@link Map} linking each {@link T} to a {@link List} of {@link String}
      */
     public CompletionServiceImpl(@NotNull Map<T, List<String>> identifiersSyntax) {
+
         this.identifiersSyntax = identifiersSyntax;
         this.dynamicOptions    = new HashMap<>();
     }
@@ -44,6 +45,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      *         A {@link Map} linking each dynamic argument name to its {@link List} of values.
      */
     public CompletionServiceImpl(@NotNull Map<T, List<String>> identifiersSyntax, @NotNull Map<String, List<String>> dynamicOptions) {
+
         this.identifiersSyntax = identifiersSyntax;
         this.dynamicOptions    = dynamicOptions;
     }
@@ -57,6 +59,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      * @return A {@link List} of {@link String}
      */
     private static List<String> prepareUserInput(@NotNull String userInput) {
+
         List<String> input;
         if (userInput.endsWith(" ")) {
             // The string ends with a space, this one need to be enforced for the completion to work in any use-case.
@@ -79,6 +82,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<String> getIdentifierSyntax(@NotNull T identifier) {
+
         if (this.identifiersSyntax.containsKey(identifier)) {
             return this.identifiersSyntax.get(identifier);
         }
@@ -97,6 +101,11 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull String getIdentifierSyntaxAt(@NotNull T identifier, int index) {
+
+        List<String> syntax = this.getIdentifierSyntax(identifier);
+        if (syntax.size() <= index) {
+            return syntax.get(syntax.size() - 1);
+        }
         return this.getIdentifierSyntax(identifier).get(index);
     }
 
@@ -114,17 +123,21 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<T> filterIdentifier(@NotNull List<String> input, @NotNull FilterMode filterMode) {
-        return this.identifiersSyntax.keySet().stream()
-                .filter(identifier -> {
-                    int sizeA = this.getIdentifierSyntax(identifier).size();
-                    int sizeB = input.size();
-                    if (filterMode == FilterMode.STRICT) {
-                        return sizeA == sizeB;
-                    } else {
-                        return sizeA >= sizeB;
-                    }
-                })
-                .collect(Collectors.toList());
+
+        return this.identifiersSyntax.keySet().stream().filter(identifier -> {
+
+            List<String> syntax = this.getIdentifierSyntax(identifier);
+            int          sizeA  = syntax.size();
+            int          sizeB  = input.size();
+
+            if (syntax.get(syntax.size() - 1).endsWith("...")) {
+                return true;
+            } else if (filterMode == FilterMode.STRICT) {
+                return sizeA == sizeB;
+            } else {
+                return sizeA >= sizeB;
+            }
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -139,6 +152,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<T> filterPotentialIdentifiers(@NotNull List<String> input) {
+
         return this.filterIdentifier(input, FilterMode.STARTING_WITH);
     }
 
@@ -154,17 +168,18 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<T> filterMatchingIdentifiers(@NotNull List<String> input) {
+
         return this.filterIdentifier(input, FilterMode.STRICT);
     }
 
     /**
      * Retrieve a {@link List} of {@link String} corresponding to the provided syntax. In most cases, this will just be
      * a {@link List} with only one item: the syntax itself.
-     *
+     * <p>
      * This can be use to create dynamic completion where one argument in the completion need to be a {@link List} of
      * {@link String} that can mutate over time (eg. A user list). The generation of this {@link List} needs to be done
      * by the implementing class, as this interface does only provide simple completion methods.
-     *
+     * <p>
      * If dynamic completion is used, you may use this in the {@link #isOptionMatching(String, String, FilterMode)}
      * method.
      *
@@ -175,6 +190,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<String> resolveSyntax(@NotNull String syntax) {
+
         if (syntax.startsWith("{") && syntax.endsWith("}")) {
             String name = syntax.substring(1, syntax.length() - 1);
 
@@ -182,7 +198,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
                 throw new CompletionException("The dynamic argument `" + name + "` isn't registered.");
             }
             return this.dynamicOptions.get(name);
-        } else if (syntax.startsWith("[") && syntax.endsWith("]")) {
+        } else if (syntax.startsWith("[") && syntax.endsWith("]") || syntax.endsWith("...")) {
             return Collections.emptyList();
         } else {
             return Collections.singletonList(syntax);
@@ -205,6 +221,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final boolean isOptionMatching(@NotNull String syntax, @NotNull String input, @NotNull FilterMode filterMode) {
+
         List<String> options = this.resolveSyntax(syntax);
         if (options.isEmpty()) {
             // Named pass-through syntax
@@ -223,6 +240,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final @NotNull List<String> complete(@NotNull String userInput) {
+
         List<T>      identifiers;
         List<String> input = CompletionServiceImpl.prepareUserInput(userInput);
 
@@ -249,6 +267,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     @Override
     public final Optional<IMatchingResult<T>> getMatchingIdentifier(@NotNull String userInput) {
+
         List<T>      identifiers;
         List<String> input = CompletionServiceImpl.prepareUserInput(userInput);
 
@@ -265,56 +284,60 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
         Map<String, String> matchingParameter = new HashMap<>();
         List<String>        identifierSyntax  = this.getIdentifierSyntax(identifier);
 
-        for (int i = 0; i < identifierSyntax.size(); i++) {
+        for (int i = 0 ; i < identifierSyntax.size() ; i++) {
             String syntax = identifierSyntax.get(i);
             if ((syntax.startsWith("{") && syntax.endsWith("}")) || syntax.startsWith("[") && syntax.endsWith("]")) {
                 String name = syntax.substring(1, syntax.length() - 1);
                 matchingParameter.put(name, input.get(i));
+            } else if (syntax.endsWith("...")) {
+                String name = syntax.substring(0, syntax.length() - 3);
+                matchingParameter.put(name, String.join(" ", input.subList(i, input.size())));
             }
         }
 
         // And return the result !
         return Optional.of(new IMatchingResult<T>() {
+
             @NotNull
             @Override
             public T getIdentifier() {
+
                 return identifier;
             }
 
             @Override
             public String getParameter(String name) {
+
                 return matchingParameter.get(name);
             }
         });
     }
 
     private List<T> filterByUserInput(List<T> identifiers, List<String> input, FilterMode filterMode) {
+
         List<T> ts = identifiers;
 
-        for (int i = 0; i < input.size(); i++) {
+        for (int i = 0 ; i < input.size() ; i++) {
             String inputOption = input.get(i);
             // Come on Java, this is so dumb.
             final int finalI = i;
 
             ts = ts.stream()
-                    .filter(identifier -> this.isOptionMatching(
-                            this.getIdentifierSyntaxAt(identifier, finalI),
-                            inputOption,
-                            // We need to enforce strict mode if its not the last argument.
-                            finalI == input.size() - 1 ? filterMode : FilterMode.STRICT
-                    ))
-                    .collect(Collectors.toList());
+                   .filter(identifier -> this.isOptionMatching(this.getIdentifierSyntaxAt(identifier, finalI), inputOption,
+                           // We need to enforce strict mode if its not the last argument.
+                           finalI == input.size() - 1 ? filterMode : FilterMode.STRICT))
+                   .collect(Collectors.toList());
         }
         return ts;
     }
 
     private List<String> collectCompletion(Collection<T> identifiers, List<String> input) {
+
         return identifiers.stream()
-                .map(identifier -> this
-                        .getIdentifierSyntaxAt(identifier, input.size() - 1))
-                .flatMap(syntax -> this.resolveSyntax(syntax).stream())
-                .filter(option -> FilterMode.STARTING_WITH.isMatching(option, input.get(input.size() - 1)))
-                .collect(Collectors.toList());
+                          .map(identifier -> this.getIdentifierSyntaxAt(identifier, input.size() - 1))
+                          .flatMap(syntax -> this.resolveSyntax(syntax).stream())
+                          .filter(option -> FilterMode.STARTING_WITH.isMatching(option, input.get(input.size() - 1)))
+                          .collect(Collectors.toList());
     }
 
 }
