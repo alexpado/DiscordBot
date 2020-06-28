@@ -81,11 +81,11 @@ public interface ICompletionService<T> {
     /**
      * Retrieve a {@link List} of {@link String} corresponding to the provided syntax. In most cases, this will just be
      * a {@link List} with only one item: the syntax itself.
-     *
+     * <p>
      * This can be use to create dynamic completion where one argument in the completion need to be a {@link List} of
      * {@link String} that can mutate over time (eg. A user list). The generation of this {@link List} needs to be done
      * by the implementing class, as this interface does only provide simple completion methods.
-     *
+     * <p>
      * If dynamic completion is used, you may use this in the {@link #isOptionMatching(String, String, FilterMode)}
      * method.
      *

@@ -18,8 +18,7 @@ public interface IMatchingResult<T> {
      *
      * @return A completion identifier {@link T}
      */
-    @NotNull
-    T getIdentifier();
+    @NotNull T getIdentifier();
 
     /**
      * Retrieve the value of the provided dynamic completion argument.
