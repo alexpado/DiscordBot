@@ -1,6 +1,7 @@
 package fr.alexpado.jda.services.commands.interfaces;
 
 import fr.alexpado.jda.interfaces.IDiscordBot;
+import fr.alexpado.jda.interfaces.IDiscordContext;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -12,14 +13,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author alexpado
  */
-public interface ICommand {
-
-    /**
-     * Retrieves the {@link IDiscordBot} from which this {@link ICommand} has been register.
-     *
-     * @return An {@link IDiscordBot} implementation.
-     */
-    @NotNull IDiscordBot getBot();
+public interface ICommand extends IDiscordContext {
 
     /**
      * Retrieves a {@link MessageEmbed} containing all information about how to use this {@link ICommand}.

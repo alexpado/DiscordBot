@@ -1,5 +1,6 @@
 package fr.alexpado.jda.services.commands.interfaces;
 
+import fr.alexpado.jda.interfaces.IDiscordContext;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import java.util.Optional;
  *
  * @author alexpado
  */
-public interface ICommandHandler {
+public interface ICommandHandler extends IDiscordContext {
 
     /**
      * Retrieve an {@link Optional} {@link ICommand} matching the provided label.

@@ -156,4 +156,15 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
             this.handle(event);
         }
     }
+
+    /**
+     * Get the {@link IDiscordBot} associated with this {@link JDACommandHandler}.
+     *
+     * @return An {@link IDiscordBot} implementation instance.
+     */
+    @Override
+    public IDiscordBot getBot() {
+
+        return this.discordBot;
+    }
 }
