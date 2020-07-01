@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'fr.alexpado.jda'
-version '1.0b2'
+version '1.0b3'
 
 repositories {
     mavenCentral()
