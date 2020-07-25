@@ -1,6 +1,7 @@
 package fr.alexpado.jda.services.commands;
 
 import fr.alexpado.jda.interfaces.IDiscordBot;
+import fr.alexpado.jda.services.commands.exceptions.SyntaxException;
 import fr.alexpado.jda.services.commands.impl.CommandEventImpl;
 import fr.alexpado.jda.services.commands.interfaces.ICommand;
 import fr.alexpado.jda.services.commands.interfaces.ICommandEvent;
@@ -8,6 +9,7 @@ import fr.alexpado.jda.services.commands.interfaces.ICommandHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -123,7 +125,7 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
 
         Optional<ICommand> optionalCommand = this.getCommand(label);
 
-        if (!optionalCommand.isPresent()) {
+        if (optionalCommand.isEmpty()) {
             this.discordBot.onCommandNotFound(event, label);
             return;
         }
@@ -134,7 +136,18 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
         this.discordBot.onCommandExecuted(commandEvent);
 
         if (!commandEvent.isCancelled()) {
-            command.execute(event);
+            try {
+                command.execute(event);
+            } catch (SyntaxException e) {
+                // Try to default to the help menu of this command...
+                MessageEmbed help = command.getHelp();
+                if (help != null) {
+                    event.getChannel().sendMessage(help).queue();
+                } else {
+                    LOGGER.info("The command '{}' has no help embed. Defaulting on throwing the exception...", label);
+                    throw e; // Rethrow the error because there is no help available...
+                }
+            }
             LOGGER.debug("The command '{}' has been successfully executed.", label);
             return;
         }
