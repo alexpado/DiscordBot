@@ -23,6 +23,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
 
     private final Map<T, List<String>>      identifiersSyntax;
     private final Map<String, List<String>> dynamicOptions;
+    private final List<String>              flags;
 
     /**
      * Create a new {@link CompletionServiceImpl}.
@@ -34,6 +35,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
 
         this.identifiersSyntax = identifiersSyntax;
         this.dynamicOptions    = new HashMap<>();
+        this.flags             = new ArrayList<>();
     }
 
     /**
@@ -48,6 +50,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
 
         this.identifiersSyntax = identifiersSyntax;
         this.dynamicOptions    = dynamicOptions;
+        this.flags             = new ArrayList<>();
     }
 
     /**
@@ -58,7 +61,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      *
      * @return A {@link List} of {@link String}
      */
-    private static List<String> prepareUserInput(@NotNull String userInput) {
+    private List<String> prepareUserInput(@NotNull String userInput) {
 
         List<String> input;
         if (userInput.endsWith(" ")) {
@@ -68,6 +71,15 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
         } else {
             input = new ArrayList<>(Arrays.asList(userInput.trim().split(" ")));
         }
+
+        input.forEach(s -> {
+            if (s.startsWith("-")) {
+                this.flags.add(s.substring(1));
+            }
+        });
+
+        this.flags.forEach(flag -> input.remove("-" + flag));
+
         return input;
     }
 
@@ -242,7 +254,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
     public final @NotNull List<String> complete(@NotNull String userInput) {
 
         List<T>      identifiers;
-        List<String> input = CompletionServiceImpl.prepareUserInput(userInput);
+        List<String> input = this.prepareUserInput(userInput);
 
         identifiers = this.filterPotentialIdentifiers(input);
         identifiers = this.filterByUserInput(identifiers, input, FilterMode.STARTING_WITH);
@@ -269,7 +281,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
     public final Optional<IMatchingResult<T>> getMatchingIdentifier(@NotNull String userInput) {
 
         List<T>      identifiers;
-        List<String> input = CompletionServiceImpl.prepareUserInput(userInput);
+        List<String> input = this.prepareUserInput(userInput);
 
         identifiers = this.filterMatchingIdentifiers(input);
         identifiers = this.filterByUserInput(identifiers, input, FilterMode.STRICT);
@@ -296,7 +308,7 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
         }
 
         // And return the result !
-        return Optional.of(new IMatchingResult<T>() {
+        return Optional.of(new IMatchingResult<>() {
 
             @NotNull
             @Override
@@ -309,6 +321,12 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
             public String getParameter(String name) {
 
                 return matchingParameter.get(name);
+            }
+
+            @Override
+            public List<String> getFlags() {
+
+                return CompletionServiceImpl.this.flags;
             }
         });
     }

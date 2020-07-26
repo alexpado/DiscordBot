@@ -2,6 +2,8 @@ package fr.alexpado.jda.services.completion.interfaces;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Interface representing a matching result.
  *
@@ -29,5 +31,13 @@ public interface IMatchingResult<T> {
      * @return A {@link String}
      */
     String getParameter(String name);
+
+    /**
+     * Retrieve a {@link List} of all flags detected during the matching sequence. All flags present in the {@link List}
+     * have their leading <code>-</code> removed.
+     *
+     * @return A {@link List} of {@link String}.
+     */
+    List<String> getFlags();
 
 }
