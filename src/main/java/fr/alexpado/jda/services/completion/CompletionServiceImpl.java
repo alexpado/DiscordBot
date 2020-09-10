@@ -63,13 +63,13 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
      */
     private List<String> prepareUserInput(@NotNull String userInput) {
 
-        List<String> input;
+        List<String> input = Arrays.stream(userInput.trim().split(" "))
+                                   .filter(s -> !s.isEmpty())
+                                   .collect(Collectors.toList());
+
         if (userInput.endsWith(" ")) {
             // The string ends with a space, this one need to be enforced for the completion to work in any use-case.
-            input = new ArrayList<>(Arrays.asList(userInput.trim().split(" ")));
             input.add("");
-        } else {
-            input = new ArrayList<>(Arrays.asList(userInput.trim().split(" ")));
         }
 
         input.forEach(s -> {
