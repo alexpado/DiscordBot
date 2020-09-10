@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class implementing {@link ICommand}.
@@ -110,7 +111,9 @@ public abstract class DiscordCommand implements ICommand {
     public void execute(@NotNull GuildMessageReceivedEvent event) {
 
         String       message   = event.getMessage().getContentRaw();
-        List<String> userInput = Arrays.asList(message.split(" "));
+        List<String> userInput = Arrays.stream(message.trim().split(" "))
+                                        .filter(s -> !s.isEmpty())
+                                        .collect(Collectors.toList());
 
         LOGGER.info("Trying to match '{}'", userInput.subList(1, userInput.size()));
 
