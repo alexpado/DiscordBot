@@ -25,18 +25,17 @@ dependencies {
 
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
     useJUnitPlatform()
 }
 
-tasks.withType(org.gradle.jvm.tasks.Jar) {
-
-    if (project.hasProperty('destinationPath')) {
-        destinationDirectory = file(project.property('destinationPath'))
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
-
-    if (project.hasProperty('destinationName')) {
-        archiveFileName = project.property('destinationName') + '.jar'
-    }
-
 }
