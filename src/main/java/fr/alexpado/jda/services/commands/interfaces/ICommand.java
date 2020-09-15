@@ -18,13 +18,15 @@ public interface ICommand extends IDiscordContext {
     /**
      * Retrieves a {@link MessageEmbed} containing all information about how to use this {@link ICommand}.
      *
+     * @param event The {@link GuildMessageReceivedEvent} to use.
+     *
      * @return A {@link MessageEmbed} instance, or null.
      */
-    @Nullable MessageEmbed getHelp();
+    @Nullable MessageEmbed getHelp(@NotNull GuildMessageReceivedEvent event);
 
     /**
      * Execute this {@link ICommand} using data contained the provided {@link GuildMessageReceivedEvent}. If no
-     * contained command matched, the {@link #getHelp()} method will be used.
+     * contained command matched, the {@link #getHelp(GuildMessageReceivedEvent)} method will be used.
      *
      * @param event
      *         The {@link GuildMessageReceivedEvent} to use.

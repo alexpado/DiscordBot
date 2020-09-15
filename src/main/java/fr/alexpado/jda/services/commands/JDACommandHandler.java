@@ -140,7 +140,7 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
                 command.execute(event);
             } catch (SyntaxException e) {
                 // Try to default to the help menu of this command...
-                MessageEmbed help = command.getHelp();
+                MessageEmbed help = command.getHelp(event);
                 if (help != null) {
                     event.getChannel().sendMessage(help).queue();
                 } else {
