@@ -142,7 +142,9 @@ public class CompletionServiceImpl<T> implements ICompletionService<T> {
             int          sizeA  = syntax.size();
             int          sizeB  = input.size();
 
-            if (syntax.get(syntax.size() - 1).endsWith("...")) {
+            if (sizeA == 0 && sizeB == 0 || syntax.get(0).equals("") && sizeB == 0) {
+                return true;
+            } else if (syntax.get(syntax.size() - 1).endsWith("...")) {
                 return true;
             } else if (filterMode == FilterMode.STRICT) {
                 return sizeA == sizeB;

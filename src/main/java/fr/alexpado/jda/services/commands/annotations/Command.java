@@ -20,6 +20,6 @@ public @interface Command {
      *
      * @return A syntax string
      */
-    String value();
+    String value() default "";
 
 }

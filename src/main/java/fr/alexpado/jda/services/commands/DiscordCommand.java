@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author alexpado
  */
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
 public abstract class DiscordCommand implements ICommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordCommand.class);
@@ -111,7 +112,7 @@ public abstract class DiscordCommand implements ICommand {
      *         The {@link GuildMessageReceivedEvent} to use.
      */
     @Override
-    public void execute(@NotNull GuildMessageReceivedEvent event) {
+    public final void execute(@NotNull GuildMessageReceivedEvent event) {
 
         String       message   = event.getMessage().getContentRaw();
         List<String> userInput = Arrays.stream(message.trim().split(" "))
