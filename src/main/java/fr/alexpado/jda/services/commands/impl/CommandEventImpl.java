@@ -15,24 +15,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 public class CommandEventImpl implements ICommandEvent {
 
     private final GuildMessageReceivedEvent event;
-    private final String                    label;
     private final ICommand                  command;
     private       boolean                   cancelled = false;
 
-    /**
-     * Creates a new {@link CommandEventImpl} instance.
-     *
-     * @param event
-     *         The {@link JDA} {@link GuildMessageReceivedEvent}.
-     * @param label
-     *         The label of the {@link ICommand} being executed.
-     * @param command
-     *         The {@link ICommand} being executed.
-     */
-    public CommandEventImpl(GuildMessageReceivedEvent event, String label, ICommand command) {
+    public CommandEventImpl(GuildMessageReceivedEvent event, ICommand command) {
 
         this.event   = event;
-        this.label   = label;
         this.command = command;
     }
 
@@ -60,17 +48,6 @@ public class CommandEventImpl implements ICommandEvent {
     }
 
     /**
-     * Get the label that has triggered this {@link ICommandEvent}.
-     *
-     * @return The {@link ICommand} label.
-     */
-    @Override
-    public String getLabel() {
-
-        return this.label;
-    }
-
-    /**
      * Get the {@link ICommand} that will be executed is {@link #isCancelled()} returns {@code false}.
      *
      * @return An {@link ICommand} implementation.
@@ -87,7 +64,7 @@ public class CommandEventImpl implements ICommandEvent {
      * @return The {@link JDA} {@link GuildMessageReceivedEvent}.
      */
     @Override
-    public GuildMessageReceivedEvent getEvent() {
+    public GuildMessageReceivedEvent getDiscordEvent() {
 
         return this.event;
     }

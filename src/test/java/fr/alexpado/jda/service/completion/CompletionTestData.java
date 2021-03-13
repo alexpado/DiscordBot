@@ -1,56 +1,69 @@
 package fr.alexpado.jda.service.completion;
 
+import fr.alexpado.jda.services.syntax.SyntaxUtils;
+import fr.alexpado.jda.services.syntax.interfaces.ISyntax;
+import fr.alexpado.jda.services.syntax.interfaces.ISyntaxContainer;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class CompletionTestData {
+public final class CompletionTestData {
 
-    static HashMap<Integer, List<String>> simpleInput() {
+    static final Map<String, List<String>> EMPTY_MAP = new HashMap<>();
 
-        HashMap<Integer, List<String>> input = new HashMap<>();
-        input.put(1, Arrays.asList("language", "switch", "java"));
-        input.put(2, Arrays.asList("language", "switch", "php"));
-        input.put(3, Arrays.asList("language", "switch", "python"));
-        input.put(4, Arrays.asList("language", "switch", "javascript"));
-        input.put(5, Arrays.asList("language", "switch", "kotlin"));
-        input.put(6, Arrays.asList("language", "switch", "c#"));
-        input.put(7, Arrays.asList("language", "show", "message"));
-        return input;
-    }
+    static final Map<String, List<String>> OPTIONS = new HashMap<>() {{
+        this.put("lang", Arrays.asList("java", "php", "python", "javascript", "kotlin", "c#"));
+    }};
 
-    static HashMap<Integer, List<String>> dynamicInput() {
+    static final Map<Integer, ISyntaxContainer> EMPTY_INPUT = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "language", 2));
+    }};
 
-        HashMap<Integer, List<String>> input = new HashMap<>();
-        input.put(1, Arrays.asList("language", "switch", "{lang}"));
-        input.put(2, Arrays.asList("language", "show", "message"));
-        return input;
-    }
+    static final Map<Integer, ISyntaxContainer> COLLISION_INPUT_A = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "collide help", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "collide [message]", 2));
+    }};
 
-    static HashMap<String, List<String>> dynamicOptions() {
+    static final Map<Integer, ISyntaxContainer> COLLISION_INPUT_B = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "collide help", 2));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "collide [message]", 1));
+    }};
 
-        HashMap<String, List<String>> options = new HashMap<>();
-        options.put("lang", Arrays.asList("java", "php", "python", "javascript", "kotlin", "c#"));
-        return options;
-    }
+    static final Map<Integer, ISyntaxContainer> REGEX_INPUT = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "regex /[0-9]+/", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "regex /[a-z]+/", 3));
+        this.put(3, SyntaxUtils.toContainer(EMPTY_MAP, "regex /strict/", 2));
+    }};
 
-    static HashMap<Integer, List<String>> passThroughInput() {
+    static final Map<Integer, ISyntaxContainer> SIMPLE_INPUT = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "language switch java", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "language switch php", 2));
+        this.put(3, SyntaxUtils.toContainer(EMPTY_MAP, "language switch python", 3));
+        this.put(4, SyntaxUtils.toContainer(EMPTY_MAP, "language switch javascript", 4));
+        this.put(5, SyntaxUtils.toContainer(EMPTY_MAP, "language switch kotlin", 5));
+        this.put(6, SyntaxUtils.toContainer(EMPTY_MAP, "language switch c#", 6));
+        this.put(7, SyntaxUtils.toContainer(EMPTY_MAP, "language show message", 7));
+    }};
 
-        HashMap<Integer, List<String>> input = new HashMap<>();
-        input.put(1, Arrays.asList("language", "switch", "[lang]"));
-        input.put(2, Arrays.asList("language", "show", "message"));
-        return input;
-    }
+    static final Map<Integer, ISyntaxContainer> DYNAMIC_INPUT = new HashMap<>() {{
+       this.put(1, SyntaxUtils.toContainer(OPTIONS, "language switch {lang}", 1));
+       this.put(2, SyntaxUtils.toContainer(OPTIONS, "language show message", 2));
+    }};
 
-    static HashMap<Integer, List<String>> fillerInput() {
+    static final Map<Integer, ISyntaxContainer> PASS_THROUGH_INPUT = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "language switch [lang]", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "language show message", 2));
+    }};
 
-        HashMap<Integer, List<String>> input = new HashMap<>();
-        input.put(1, Arrays.asList("language", "switch", "[lang]"));
-        input.put(2, Arrays.asList("language", "message", "msg..."));
-        return input;
-    }
+    static final Map<Integer, ISyntaxContainer> FILLER_INPUT = new HashMap<>() {{
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "language switch [lang]", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "language message msg...", 2));
+    }};
 
     static void assertListEquals(List<String> expected, List<String> actual) {
 

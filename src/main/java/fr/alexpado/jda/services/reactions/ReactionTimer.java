@@ -3,8 +3,6 @@ package fr.alexpado.jda.services.reactions;
 import fr.alexpado.jda.services.reactions.interfaces.IReactionListener;
 import fr.alexpado.jda.services.reactions.interfaces.IReactionTimer;
 
-import java.util.TimerTask;
-
 public class ReactionTimer implements IReactionTimer {
 
     private final IReactionListener listener;

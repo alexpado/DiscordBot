@@ -22,4 +22,11 @@ public @interface Command {
      */
     String value() default "";
 
+    /**
+     * Define the priority compared to other {@link Command}s
+     *
+     * @return The order priority.
+     */
+    int order() default Integer.MIN_VALUE;
+
 }

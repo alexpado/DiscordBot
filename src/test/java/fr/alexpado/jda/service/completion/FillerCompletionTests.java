@@ -1,8 +1,8 @@
 package fr.alexpado.jda.service.completion;
 
-import fr.alexpado.jda.services.completion.CompletionServiceImpl;
-import fr.alexpado.jda.services.completion.interfaces.ICompletionService;
-import fr.alexpado.jda.services.completion.interfaces.IMatchingResult;
+import fr.alexpado.jda.services.syntax.SyntaxService;
+import fr.alexpado.jda.services.syntax.interfaces.IMatchingResult;
+import fr.alexpado.jda.services.syntax.interfaces.ISyntaxService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,10 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static fr.alexpado.jda.service.completion.CompletionTestData.FILLER_INPUT;
 import static fr.alexpado.jda.service.completion.CompletionTestData.assertListEquals;
-import static fr.alexpado.jda.service.completion.CompletionTestData.fillerInput;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DisplayName("Filler Completion")
 public class FillerCompletionTests {
@@ -22,8 +21,8 @@ public class FillerCompletionTests {
     @DisplayName("Unfinished input")
     public void testPassThroughCompletionOnUnfinishedInput() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
-        List<String>                results = service.complete("language message j");
+        ISyntaxService<Integer> service = new SyntaxService<>(FILLER_INPUT);
+        List<String>            results = service.complete("language message j");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -31,8 +30,8 @@ public class FillerCompletionTests {
     @DisplayName("Trailing space")
     public void testPassThroughCompleteWithTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
-        List<String>                results = service.complete("language message ");
+        ISyntaxService<Integer> service = new SyntaxService<>(FILLER_INPUT);
+        List<String>            results = service.complete("language message ");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -40,8 +39,8 @@ public class FillerCompletionTests {
     @DisplayName("No trailing space")
     public void testPassThroughCompleteWithoutTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
-        List<String>                results = service.complete("language message");
+        ISyntaxService<Integer> service = new SyntaxService<>(FILLER_INPUT);
+        List<String>            results = service.complete("language message");
         assertListEquals(Collections.singletonList("message"), results);
     }
 
@@ -49,8 +48,8 @@ public class FillerCompletionTests {
     @DisplayName("Should be empty")
     public void testPassThroughCompleteShouldBeEmpty() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(fillerInput());
-        List<String>                results = service.complete("language messa ja");
+        ISyntaxService<Integer> service = new SyntaxService<>(FILLER_INPUT);
+        List<String>            results = service.complete("language messa ja");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -58,8 +57,8 @@ public class FillerCompletionTests {
     @DisplayName("Should be present")
     public void testPassThroughMatchShouldBePresent() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language message Hello You !");
+        ISyntaxService<Integer>            service = new SyntaxService<>(FILLER_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language message Hello You !");
         assertTrue(results.isPresent());
     }
 
@@ -67,18 +66,20 @@ public class FillerCompletionTests {
     @DisplayName("Should have a parameter")
     public void testPassThroughMatchShouldHaveParameter() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language message Hello You ! This is a filler for very long string at the end of a command :)");
+        ISyntaxService<Integer>            service = new SyntaxService<>(FILLER_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language message Hello You ! This is a filler for very long string at the end of a command :)");
         assertTrue(results.isPresent());
-        assertEquals("Hello You ! This is a filler for very long string at the end of a command :)", results.get().getParameter("msg"));
+        assertEquals("Hello You ! This is a filler for very long string at the end of a command :)", results.get()
+                                                                                                            .getParameter("msg")
+                                                                                                            .orElse(null));
     }
 
     @Test
     @DisplayName("Should not be present (invalid)")
     public void testPassThroughMatchShouldNotBePresentWhenInvalid() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language messa java");
+        ISyntaxService<Integer>            service = new SyntaxService<>(FILLER_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language messa java");
         assertFalse(results.isPresent());
     }
 
@@ -86,8 +87,8 @@ public class FillerCompletionTests {
     @DisplayName("Should not be present (incomplete)")
     public void testPassThroughMatchShouldNotBePresentWhenIncomplete() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(fillerInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language swit java");
+        ISyntaxService<Integer>            service = new SyntaxService<>(FILLER_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language swit java");
         assertFalse(results.isPresent());
     }
 

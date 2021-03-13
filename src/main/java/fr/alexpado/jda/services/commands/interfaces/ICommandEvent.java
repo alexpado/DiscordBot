@@ -27,13 +27,6 @@ public interface ICommandEvent {
     void setCancelled(boolean cancelled);
 
     /**
-     * Get the label that has triggered this {@link ICommandEvent}.
-     *
-     * @return The {@link ICommand} label.
-     */
-    String getLabel();
-
-    /**
      * Get the {@link ICommand} that will be executed is {@link #isCancelled()} returns {@code false}.
      *
      * @return An {@link ICommand} implementation.
@@ -45,6 +38,6 @@ public interface ICommandEvent {
      *
      * @return The {@link JDA} {@link GuildMessageReceivedEvent}.
      */
-    GuildMessageReceivedEvent getEvent();
+    GuildMessageReceivedEvent getDiscordEvent();
 
 }

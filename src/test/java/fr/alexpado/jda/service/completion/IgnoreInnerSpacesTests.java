@@ -1,8 +1,8 @@
 package fr.alexpado.jda.service.completion;
 
-import fr.alexpado.jda.services.completion.CompletionServiceImpl;
-import fr.alexpado.jda.services.completion.interfaces.ICompletionService;
-import fr.alexpado.jda.services.completion.interfaces.IMatchingResult;
+import fr.alexpado.jda.services.syntax.SyntaxService;
+import fr.alexpado.jda.services.syntax.interfaces.IMatchingResult;
+import fr.alexpado.jda.services.syntax.interfaces.ISyntaxService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static fr.alexpado.jda.service.completion.CompletionTestData.SIMPLE_INPUT;
 import static fr.alexpado.jda.service.completion.CompletionTestData.assertListEquals;
-import static fr.alexpado.jda.service.completion.CompletionTestData.simpleInput;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,8 +23,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Unfinished input")
     public void testSimpleCompleteOnUnfinishedInput() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(simpleInput());
-        List<String>                results = service.complete("language     switch     j");
+        ISyntaxService<Integer> service = new SyntaxService<>(SIMPLE_INPUT);
+        List<String>            results = service.complete("language     switch     j");
         assertListEquals(Arrays.asList("java", "javascript"), results);
     }
 
@@ -32,8 +32,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Trailing space")
     public void testSimpleCompleteWithTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(simpleInput());
-        List<String>                results = service.complete("language   switch ");
+        ISyntaxService<Integer> service = new SyntaxService<>(SIMPLE_INPUT);
+        List<String>            results = service.complete("language   switch ");
         assertListEquals(Arrays.asList("java", "php", "python", "javascript", "kotlin", "c#"), results);
     }
 
@@ -41,8 +41,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("No trailing space")
     public void testSimpleCompleteWithoutTrailingSpace() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(simpleInput());
-        List<String>                results = service.complete("language      switch");
+        ISyntaxService<Integer> service = new SyntaxService<>(SIMPLE_INPUT);
+        List<String>            results = service.complete("language      switch");
         assertListEquals(Collections.singletonList("switch"), results);
     }
 
@@ -50,8 +50,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Should be empty")
     public void testSimpleCompleteShouldBeEmpty() {
 
-        ICompletionService<Integer> service = new CompletionServiceImpl<>(simpleInput());
-        List<String>                results = service.complete("language      swit    ja");
+        ISyntaxService<Integer> service = new SyntaxService<>(SIMPLE_INPUT);
+        List<String>            results = service.complete("language      swit    ja");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -59,8 +59,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Should be present")
     public void testSimpleMatchShouldBePresent() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(simpleInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language    switch     java");
+        ISyntaxService<Integer>            service = new SyntaxService<>(SIMPLE_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language    switch     java");
         assertTrue(results.isPresent());
     }
 
@@ -68,8 +68,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Should not be present (invalid)")
     public void testSimpleMatchShouldNotBePresentWhenInvalid() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(simpleInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language     swit    java");
+        ISyntaxService<Integer>            service = new SyntaxService<>(SIMPLE_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language     swit    java");
         assertFalse(results.isPresent());
     }
 
@@ -77,8 +77,8 @@ public class IgnoreInnerSpacesTests {
     @DisplayName("Should not be present (incomplete)")
     public void testSimpleMatchShouldNotBePresentWhenIncomplete() {
 
-        ICompletionService<Integer>        service = new CompletionServiceImpl<>(simpleInput());
-        Optional<IMatchingResult<Integer>> results = service.getMatchingIdentifier("language    swit     java");
+        ISyntaxService<Integer>            service = new SyntaxService<>(SIMPLE_INPUT);
+        Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language    swit     java");
         assertFalse(results.isPresent());
     }
 

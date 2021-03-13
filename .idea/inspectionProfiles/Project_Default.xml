@@ -79,7 +79,7 @@
     <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionNameDoesntEndWithException" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExtendsThrowable" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="FeatureEnvy" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+    <inspection_tool class="FeatureEnvy" enabled="true" level="WEAK WARNING" enabled_by_default="false">
       <scope name="Tests" level="WEAK WARNING" enabled="false">
         <option name="ignoreTestCases" value="false" />
       </scope>

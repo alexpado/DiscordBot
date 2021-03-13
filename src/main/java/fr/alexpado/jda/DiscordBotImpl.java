@@ -2,12 +2,10 @@ package fr.alexpado.jda;
 
 import fr.alexpado.jda.interfaces.IDiscordBot;
 import fr.alexpado.jda.services.commands.JDACommandHandler;
-import fr.alexpado.jda.services.commands.interfaces.ICommand;
-import fr.alexpado.jda.services.commands.interfaces.ICommandEvent;
 import fr.alexpado.jda.services.commands.interfaces.ICommandHandler;
-import net.dv8tion.jda.api.JDA;
+import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
@@ -26,40 +24,34 @@ import java.util.Collection;
  */
 public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscordBot {
 
+    public static final String RAW_BOT_ADD_LINK = "https://discord.com/oauth2/authorize?client_id=%s&permissions=%s&scope=bot";
+
     private static final Logger          LOGGER = LoggerFactory.getLogger(DiscordBotImpl.class);
     private final        ICommandHandler commandHandler;
     private final        JDABuilder      jdaBuilder;
 
     /**
-     * Create a new instance of {@link DiscordBotImpl} using the provided {@link Collection} of {@link GatewayIntent}
-     * and the provided prefix for the {@link ICommandHandler}.
+     * Create a new instance of {@link DiscordBotImpl} using the provided {@link Collection} of {@link GatewayIntent}.
      *
      * @param intents
      *         A {@link Collection} of {@link GatewayIntent} to use.
-     * @param prefix
-     *         The prefix to use when creating this {@link DiscordBotImpl}'s {@link ICommandHandler}.
      */
-    protected DiscordBotImpl(@NotNull Collection<GatewayIntent> intents, @NotNull String prefix) {
+    protected DiscordBotImpl(@NotNull Collection<GatewayIntent> intents) {
 
         this.jdaBuilder = JDABuilder.create(intents);
         this.jdaBuilder.addEventListeners(this);
 
-        this.commandHandler = new JDACommandHandler(this, prefix);
+        this.commandHandler = new JDACommandHandler(this);
         this.jdaBuilder.addEventListeners(this.commandHandler);
     }
 
     /**
-     * Create a new instance of {@link DiscordBotImpl} using {@link GatewayIntent#DEFAULT} intents and the provided
-     * prefix for the {@link ICommandHandler}.
-     *
-     * @param prefix
-     *         The prefix to use when creating this {@link DiscordBotImpl}'s {@link ICommandHandler}
+     * Create a new instance of {@link DiscordBotImpl} using {@link GatewayIntent#DEFAULT} intents.
      */
-    protected DiscordBotImpl(@NotNull String prefix) {
+    protected DiscordBotImpl() {
 
-        this(GatewayIntent.getIntents(GatewayIntent.DEFAULT), prefix);
+        this(GatewayIntent.getIntents(GatewayIntent.DEFAULT));
     }
-
 
     /**
      * Initiate the login sequence to Discord.
@@ -68,47 +60,31 @@ public abstract class DiscordBotImpl extends ListenerAdapter implements IDiscord
      *         The token to use when login in to Discord
      */
     @Override
-    public final void login(String token) {
+    public final void login(@NotNull String token) {
 
         try {
             this.jdaBuilder.setToken(token);
+            this.getListenerAdapters().forEach(this.jdaBuilder::addEventListeners);
             this.jdaBuilder.build();
         } catch (LoginException e) {
             LOGGER.warn("Unable to connect to Discord. The token provided is probably invalid.", e);
+
+            Sentry.withScope(scope -> {
+                scope.setLevel(SentryLevel.FATAL);
+                Sentry.captureException(e);
+            });
         }
     }
 
+    /**
+     * Retrieve the {@link ICommandHandler} in use for this {@link IDiscordBot}.
+     *
+     * @return An {@link ICommandHandler} implementation.
+     */
     @Override
-    public ICommandHandler getCommandHandler() {
+    public @NotNull ICommandHandler getCommandHandler() {
 
         return this.commandHandler;
     }
 
-    /**
-     * Called by {@link ICommandHandler} when an {@link ICommand} matching the provided label couldn't be found.
-     *
-     * @param event
-     *         The {@link JDA} {@link GuildMessageReceivedEvent}.
-     * @param label
-     *         The label that has been used to try matching an {@link ICommand}
-     */
-    @Override
-    public void onCommandNotFound(@NotNull GuildMessageReceivedEvent event, @NotNull String label) {
-
-        LOGGER.debug("User {} tried to execute the command {}.", event.getAuthor().getIdLong(), label);
-    }
-
-    /**
-     * Called by {@link ICommandHandler}
-     *
-     * @param event
-     *         The {@link ICommandEvent} triggering this event.
-     */
-    @Override
-    public void onCommandExecuted(@NotNull ICommandEvent event) {
-
-        LOGGER.debug("The {} command will be executed by user {}.", event.getLabel(), event.getEvent()
-                                                                                           .getAuthor()
-                                                                                           .getIdLong());
-    }
 }
