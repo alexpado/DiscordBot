@@ -8,6 +8,7 @@ import fr.alexpado.jda.services.commands.interfaces.ICommandContext;
 import fr.alexpado.jda.services.commands.interfaces.ICommandEvent;
 import fr.alexpado.jda.services.commands.interfaces.ICommandHandler;
 import fr.alexpado.jda.services.tools.embed.EmbedPage;
+import fr.alexpado.jda.services.tools.interfaces.IEmbedPage;
 import io.sentry.Sentry;
 import io.sentry.protocol.User;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -17,7 +18,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import java.util.*;
  */
 public class JDACommandHandler extends ListenerAdapter implements ICommandHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JDACommandHandler.class);
+    private static final Logger           LOGGER               = LoggerFactory.getLogger(JDACommandHandler.class);
     private static final List<Permission> REQUIRED_PERMISSIONS = Arrays.asList(Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
     private static final List<Permission> OPTIONAL_PERMISSIONS = Arrays.asList(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_MANAGE);
 
@@ -138,61 +138,59 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
         ICommandEvent commandEvent = new CommandEventImpl(event, command);
         this.bot.getCommandHelper().onCommandExecuted(commandEvent);
 
-        if (!commandEvent.isCancelled()) {
-
-            if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), REQUIRED_PERMISSIONS)) {
-                this.getBot().getCommandHelper().onPermissionMissing(event);
-                return;
-            }
-
-            try {
-                ICommandContext context = this.getBot().getCommandHelper().createContext(event);
-                Object          result  = command.execute(context);
-
-                if (context instanceof AutoCloseable) {
-                    ((AutoCloseable) context).close();
-                }
-
-                if (result instanceof MessageBuilder) {
-                    MessageBuilder builder = (MessageBuilder) result;
-                    event.getChannel().sendMessage(builder.build()).queue();
-                } else if (result instanceof EmbedBuilder) {
-                    EmbedBuilder   builder    = (EmbedBuilder) result;
-                    this.send(event.getChannel(), builder);
-                } else if (result instanceof EmbedPage) {
-                    EmbedPage<?> page = (EmbedPage<?>) result;
-                    event.getChannel()
-                         .sendMessage(new EmbedBuilder().setDescription("...").build())
-                         .queue(page::setMessage);
-                } else if (result instanceof String) {
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder.setDescription(((CharSequence) result));
-                    this.send(event.getChannel(), builder);
-                }
-            } catch (SyntaxException e) {
-                EmbedBuilder   builder    = this.getBot().getCommandHelper().onSyntaxError(command, event);
-                this.send(event.getChannel(), builder);
-            } catch (Exception e) {
-                Throwable reportableException;
-
-                if (e instanceof InvocationTargetException) {
-                    // If it's an invocation target exception, it means that the error was most likely within the command.
-                    reportableException = e.getCause();
-                } else {
-                    reportableException = e;
-                }
-
-                this.report(event, label, reportableException);
-                EmbedBuilder   builder    = this.bot.getCommandHelper().onException(event, reportableException);
-                this.send(event.getChannel(), builder);
-            }
-
-        } else {
+        if (commandEvent.isCancelled()) {
             LOGGER.debug("Command execution cancelled.");
+            return;
         }
+
+
+        if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), REQUIRED_PERMISSIONS)) {
+            this.getBot().getCommandHelper().onPermissionMissing(event);
+            return;
+        }
+
+        try {
+            ICommandContext context = this.getBot().getCommandHelper().createContext(event);
+            Object          result  = command.execute(context);
+
+            if (context instanceof AutoCloseable) {
+                ((AutoCloseable) context).close();
+            }
+
+            if (result instanceof MessageBuilder) {
+                MessageBuilder builder = (MessageBuilder) result;
+                event.getChannel().sendMessage(builder.build()).queue();
+            } else if (result instanceof EmbedBuilder) {
+                EmbedBuilder builder = (EmbedBuilder) result;
+                this.send(event.getChannel(), builder);
+            } else if (result instanceof EmbedPage) {
+                IEmbedPage<?> page = (IEmbedPage<?>) result;
+                event.getChannel()
+                     .sendMessage(new EmbedBuilder().setDescription("...").build())
+                     .queue(page::setMessage);
+            } else if (result instanceof String) {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setDescription(((CharSequence) result));
+                this.send(event.getChannel(), builder);
+            }
+        } catch (SyntaxException e) {
+            EmbedBuilder builder = this.getBot().getCommandHelper().onSyntaxError(command, event);
+            this.send(event.getChannel(), builder);
+        } catch (InvocationTargetException e) {
+            Throwable reportable = e.getCause();
+            this.report(event, label, reportable);
+            EmbedBuilder builder = this.bot.getCommandHelper().onException(event, reportable);
+            this.send(event.getChannel(), builder);
+        } catch (Exception e) {
+            this.report(event, label, e);
+            EmbedBuilder builder = this.bot.getCommandHelper().onException(event, e);
+            this.send(event.getChannel(), builder);
+        }
+
     }
 
     private void send(MessageChannel channel, EmbedBuilder builder) {
+
         MessageBuilder msgBuilder = new MessageBuilder();
         msgBuilder.setEmbed(builder.build());
         this.getNotice().ifPresent(msgBuilder::setContent);

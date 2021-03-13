@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class TranslationProviderTest implements ITranslationProvider {
 
-    private List<ITranslation> translations = new ArrayList<>();
+    private final List<ITranslation> translations = new ArrayList<>();
 
     public TranslationProviderTest() {
 

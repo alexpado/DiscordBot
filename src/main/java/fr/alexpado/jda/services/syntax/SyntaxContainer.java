@@ -118,8 +118,9 @@ public class SyntaxContainer implements ISyntaxContainer {
 
             if (i == this.syntaxList.size() - 1 && data.size() > this.syntaxList.size()) {
 
+                //noinspection InstanceofConcreteClass
                 if (syntax instanceof FillingSyntax) {
-                    // Collect
+
                     Collection<String> contents = new ArrayList<>();
 
                     for (int j = i ; j < data.size() ; j++) {

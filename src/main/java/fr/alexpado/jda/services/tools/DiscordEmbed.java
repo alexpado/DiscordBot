@@ -17,12 +17,9 @@ public class DiscordEmbed extends EmbedBuilder {
     private static final Pattern EMBED_FIELD       = Pattern.compile("@field\\(\"(?<name>.*?)\", \"(?<value>.*?)\"\\)", Pattern.MULTILINE);
     private static final Pattern EMBED_COLOR       = Pattern.compile("@color\\((?<r>\\d*), (?<g>\\d*), (?<b>\\d*)\\)", Pattern.MULTILINE);
 
-    private final JDA jda;
-
     public DiscordEmbed(JDA jda) {
 
         super();
-        this.jda = jda;
 
         // Define the default footer
         super.setFooter(String.format("%s • Powered by the Adventurers' Guild", jda.getSelfUser().getName()));
@@ -34,6 +31,7 @@ public class DiscordEmbed extends EmbedBuilder {
      * @param markup
      *         The markdown.
      */
+    @SuppressWarnings("PublicMethodNotExposedInInterface")
     public void setMarkup(@NotNull CharSequence markup) {
 
         Matcher titleMatcher       = EMBED_TITLE.matcher(markup);
@@ -55,11 +53,11 @@ public class DiscordEmbed extends EmbedBuilder {
         }
 
         if (colorMatcher.find()) {
-            int r = Integer.parseInt(colorMatcher.group("r"));
-            int g = Integer.parseInt(colorMatcher.group("g"));
-            int b = Integer.parseInt(colorMatcher.group("b"));
+            int red = Integer.parseInt(colorMatcher.group("r"));
+            int green = Integer.parseInt(colorMatcher.group("g"));
+            int blue = Integer.parseInt(colorMatcher.group("b"));
 
-            super.setColor(new Color(r, g, b));
+            super.setColor(new Color(red, green, blue));
         }
 
         while (fieldMatcher.find()) {

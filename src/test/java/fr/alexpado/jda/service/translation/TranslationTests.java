@@ -15,7 +15,7 @@ public class TranslationTests {
     @DisplayName("English translation")
     public void testObjectEnglishTranslation() throws IllegalAccessException {
 
-        TestObjectA objectA = new TestObjectA();
+        TestObjectA             objectA      = new TestObjectA();
         TranslationProviderTest providerTest = new TranslationProviderTest();
 
         Translator.translate(providerTest, "en", objectA);
@@ -29,7 +29,7 @@ public class TranslationTests {
     @DisplayName("French translation")
     public void testObjectFrenchTranslation() throws IllegalAccessException {
 
-        TestObjectA objectA = new TestObjectA();
+        TestObjectA             objectA      = new TestObjectA();
         TranslationProviderTest providerTest = new TranslationProviderTest();
 
         Translator.translate(providerTest, "fr", objectA);
@@ -38,7 +38,6 @@ public class TranslationTests {
         assertEquals("Service hors ligne", objectA.getDiscordBot());
         assertEquals("Propriété", objectA.getTrSrv().getProps());
     }
-
 
 
 }

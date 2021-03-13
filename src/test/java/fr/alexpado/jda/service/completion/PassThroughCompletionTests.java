@@ -10,7 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static fr.alexpado.jda.service.completion.CompletionTestData.*;
+import static fr.alexpado.jda.service.completion.CompletionTestData.PASS_THROUGH_INPUT;
+import static fr.alexpado.jda.service.completion.CompletionTestData.assertListEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Pass Through Completion")
@@ -30,7 +31,7 @@ public class PassThroughCompletionTests {
     public void testPassThroughCompleteWithTrailingSpace() {
 
         ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
-        List<String>                results = service.complete("language switch ");
+        List<String>            results = service.complete("language switch ");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -39,7 +40,7 @@ public class PassThroughCompletionTests {
     public void testPassThroughCompleteWithoutTrailingSpace() {
 
         ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
-        List<String>                results = service.complete("language switch");
+        List<String>            results = service.complete("language switch");
         assertListEquals(Collections.singletonList("switch"), results);
     }
 
@@ -48,7 +49,7 @@ public class PassThroughCompletionTests {
     public void testPassThroughCompleteShouldBeEmpty() {
 
         ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
-        List<String>                results = service.complete("language swit ja");
+        List<String>            results = service.complete("language swit ja");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -56,7 +57,7 @@ public class PassThroughCompletionTests {
     @DisplayName("Should be present")
     public void testPassThroughMatchShouldBePresent() {
 
-        ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
+        ISyntaxService<Integer>            service = new SyntaxService<>(PASS_THROUGH_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language switch java");
         assertTrue(results.isPresent());
     }
@@ -65,7 +66,7 @@ public class PassThroughCompletionTests {
     @DisplayName("Should have a parameter")
     public void testPassThroughMatchShouldHaveParameter() {
 
-        ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
+        ISyntaxService<Integer>            service = new SyntaxService<>(PASS_THROUGH_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language switch yes");
         assertTrue(results.isPresent());
         assertEquals("yes", results.get().getParameter("lang").orElse(null));
@@ -75,7 +76,7 @@ public class PassThroughCompletionTests {
     @DisplayName("Should not be present (invalid)")
     public void testPassThroughMatchShouldNotBePresentWhenInvalid() {
 
-        ISyntaxService<Integer> service = new SyntaxService<>(PASS_THROUGH_INPUT);
+        ISyntaxService<Integer>            service = new SyntaxService<>(PASS_THROUGH_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language swit java");
         assertFalse(results.isPresent());
     }

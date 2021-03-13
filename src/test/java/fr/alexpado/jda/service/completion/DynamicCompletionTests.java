@@ -1,9 +1,7 @@
 package fr.alexpado.jda.service.completion;
 
 import fr.alexpado.jda.services.syntax.SyntaxService;
-import fr.alexpado.jda.services.syntax.SyntaxUtils;
 import fr.alexpado.jda.services.syntax.interfaces.IMatchingResult;
-import fr.alexpado.jda.services.syntax.interfaces.ISyntaxContainer;
 import fr.alexpado.jda.services.syntax.interfaces.ISyntaxService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static fr.alexpado.jda.service.completion.CompletionTestData.*;
+import static fr.alexpado.jda.service.completion.CompletionTestData.DYNAMIC_INPUT;
+import static fr.alexpado.jda.service.completion.CompletionTestData.assertListEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Dynamic Completion")
@@ -33,7 +32,7 @@ public class DynamicCompletionTests {
     public void testDynamicCompleteWithTrailingSpace() {
 
         ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
-        List<String>                results = service.complete("language switch ");
+        List<String>            results = service.complete("language switch ");
         assertListEquals(Arrays.asList("java", "php", "python", "javascript", "kotlin", "c#"), results);
     }
 
@@ -42,15 +41,16 @@ public class DynamicCompletionTests {
     public void testDynamicCompleteWithoutTrailingSpace() {
 
         ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
-        List<String>                results = service.complete("language switch");
+        List<String>            results = service.complete("language switch");
         assertListEquals(Collections.singletonList("switch"), results);
     }
 
     @Test
     @DisplayName("Should be empty")
     public void testDynamicCompleteShouldBeEmpty() {
+
         ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
-        List<String>                results = service.complete("language swit ja");
+        List<String>            results = service.complete("language swit ja");
         assertListEquals(Collections.emptyList(), results);
     }
 
@@ -66,7 +66,8 @@ public class DynamicCompletionTests {
     @Test
     @DisplayName("Should have a parameter")
     public void testDynamicMatchShouldHaveParameter() {
-        ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
+
+        ISyntaxService<Integer>            service = new SyntaxService<>(DYNAMIC_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language switch java");
         assertTrue(results.isPresent());
         assertEquals("java", results.get().getParameter("lang").orElse(null));
@@ -76,7 +77,7 @@ public class DynamicCompletionTests {
     @DisplayName("Should not be present (invalid)")
     public void testDynamicMatchShouldNotBePresentWhenInvalid() {
 
-        ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
+        ISyntaxService<Integer>            service = new SyntaxService<>(DYNAMIC_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language swit java");
         assertFalse(results.isPresent());
     }
@@ -85,7 +86,7 @@ public class DynamicCompletionTests {
     @DisplayName("Should not be present (incomplete)")
     public void testDynamicMatchShouldNotBePresentWhenIncomplete() {
 
-        ISyntaxService<Integer> service = new SyntaxService<>(DYNAMIC_INPUT);
+        ISyntaxService<Integer>            service = new SyntaxService<>(DYNAMIC_INPUT);
         Optional<IMatchingResult<Integer>> results = service.getMatchingResult("language swit java");
         assertFalse(results.isPresent());
     }

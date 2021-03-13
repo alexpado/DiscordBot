@@ -45,8 +45,7 @@ public interface ICommand extends IDiscordContext {
      *         that should produce a user-friendly output.
      * @see ICommandHandler#handle(GuildMessageReceivedEvent)
      */
-    @Nullable
-    Object execute(@NotNull ICommandContext context) throws Exception;
+    @Nullable Object execute(@NotNull ICommandContext context) throws Exception;
 
     /**
      * Retrieve the {@link Map} associating an {@link ISyntax} to its possible values.

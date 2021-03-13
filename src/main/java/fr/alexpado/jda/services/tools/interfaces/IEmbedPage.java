@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public interface IEmbedPage<T> {
+public interface IEmbedPage<T> extends IReactionListener {
 
     /**
      * Retrieve the {@link EmbedBuilder} that will be used as base to generate the {@link IEmbedPage}.

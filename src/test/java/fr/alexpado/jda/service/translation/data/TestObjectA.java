@@ -11,7 +11,7 @@ public class TestObjectA {
     private String translationService;
 
     @I18N
-    private TestObjectB trSrv = new TestObjectB();
+    private final TestObjectB trSrv = new TestObjectB();
 
     public String getDiscordBot() {
 

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("AbstractClassExtendsConcreteClass")
 public abstract class EmbedPage<T> extends ReactionListener implements IEmbedPage<T> {
 
     private final List<T> origin;

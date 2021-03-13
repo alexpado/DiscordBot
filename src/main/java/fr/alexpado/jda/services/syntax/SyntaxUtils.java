@@ -8,7 +8,7 @@ import fr.alexpado.jda.services.syntax.rules.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SyntaxUtils {
+public final class SyntaxUtils {
 
     /**
      * Convert the provided {@link String} into the corresponding {@link ISyntax}.

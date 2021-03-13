@@ -5,7 +5,7 @@ import fr.alexpado.jda.services.translations.interfaces.ITranslationProvider;
 
 import java.lang.reflect.Field;
 
-public class Translator {
+public final class Translator {
 
     public static void translate(ITranslationProvider provider, String language, Object target) throws IllegalAccessException {
 
@@ -21,22 +21,22 @@ public class Translator {
                 // Direct translation
                 String translation = provider.getTranslation(language, i18n.value());
 
-                if (!declaredField.canAccess(target)) {
+                if (declaredField.canAccess(target)) {
+                    declaredField.set(target, translation);
+                } else {
                     declaredField.setAccessible(true);
                     declaredField.set(target, translation);
                     declaredField.setAccessible(false);
-                } else {
-                    declaredField.set(target, translation);
                 }
 
             } else if (i18n.value().isEmpty()) {
                 // Indirect translation
-                if (!declaredField.canAccess(target)) {
+                if (declaredField.canAccess(target)) {
+                    translate(provider, language, declaredField.get(target));
+                } else {
                     declaredField.setAccessible(true);
                     translate(provider, language, declaredField.get(target));
                     declaredField.setAccessible(false);
-                } else {
-                    translate(provider, language, declaredField.get(target));
                 }
             }
 

@@ -1,7 +1,6 @@
 package fr.alexpado.jda.service.completion;
 
 import fr.alexpado.jda.services.syntax.SyntaxUtils;
-import fr.alexpado.jda.services.syntax.interfaces.ISyntax;
 import fr.alexpado.jda.services.syntax.interfaces.ISyntaxContainer;
 
 import java.util.Arrays;
@@ -51,8 +50,8 @@ public final class CompletionTestData {
     }};
 
     static final Map<Integer, ISyntaxContainer> DYNAMIC_INPUT = new HashMap<>() {{
-       this.put(1, SyntaxUtils.toContainer(OPTIONS, "language switch {lang}", 1));
-       this.put(2, SyntaxUtils.toContainer(OPTIONS, "language show message", 2));
+        this.put(1, SyntaxUtils.toContainer(OPTIONS, "language switch {lang}", 1));
+        this.put(2, SyntaxUtils.toContainer(OPTIONS, "language show message", 2));
     }};
 
     static final Map<Integer, ISyntaxContainer> PASS_THROUGH_INPUT = new HashMap<>() {{

@@ -1,17 +1,8 @@
 package fr.alexpado.jda.services.commands;
 
-import fr.alexpado.jda.services.commands.annotations.Command;
 import fr.alexpado.jda.services.commands.annotations.Param;
 import fr.alexpado.jda.services.commands.interfaces.ICommandContext;
-import fr.alexpado.jda.services.syntax.SyntaxContainer;
-import fr.alexpado.jda.services.syntax.SyntaxService;
 import fr.alexpado.jda.services.syntax.interfaces.IMatchingResult;
-import fr.alexpado.jda.services.syntax.interfaces.ISyntax;
-import fr.alexpado.jda.services.syntax.interfaces.ISyntaxContainer;
-import fr.alexpado.jda.services.syntax.rules.EagerSyntax;
-import fr.alexpado.jda.services.syntax.rules.RegexSyntax;
-import fr.alexpado.jda.services.syntax.rules.SelectiveSyntax;
-import fr.alexpado.jda.services.syntax.rules.WordSyntax;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -19,7 +10,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 final class CommandUtils {
 

@@ -11,8 +11,6 @@ public interface ITranslationProvider {
      *         The translation's language
      * @param key
      *         The translation's key
-     * @param args
-     *         The list of args to use when calling {@link ITranslation#getValue(Object...)}.
      *
      * @return The fully translated and formatted string corresponding to the language and key.
      */
