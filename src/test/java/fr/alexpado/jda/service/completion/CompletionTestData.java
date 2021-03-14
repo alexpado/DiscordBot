@@ -34,9 +34,9 @@ public final class CompletionTestData {
     }};
 
     static final Map<Integer, ISyntaxContainer> REGEX_INPUT = new HashMap<>() {{
-        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "regex /[0-9]+/", 1));
-        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "regex /[a-z]+/", 3));
-        this.put(3, SyntaxUtils.toContainer(EMPTY_MAP, "regex /strict/", 2));
+        this.put(1, SyntaxUtils.toContainer(EMPTY_MAP, "regex /value:[0-9]+/", 1));
+        this.put(2, SyntaxUtils.toContainer(EMPTY_MAP, "regex /value:[a-z]+/", 3));
+        this.put(3, SyntaxUtils.toContainer(EMPTY_MAP, "regex /value:strict/", 2));
     }};
 
     static final Map<Integer, ISyntaxContainer> SIMPLE_INPUT = new HashMap<>() {{

@@ -20,8 +20,16 @@ public class RegexSyntax implements ISyntax {
 
     public RegexSyntax(String name) {
 
-        this.name      = SyntaxService.getName(name, "/", "/");
-        this.pattern   = Pattern.compile(this.name);
+
+        String[] parts = SyntaxService.getName(name, "/", "/").split(":");
+
+        if (parts.length == 2) {
+            this.name      = parts[0];
+            this.pattern   = Pattern.compile(parts[1]);
+        } else {
+            throw new IllegalArgumentException("Wrong regex declaration: Should be /name:regex/");
+        }
+
         this.lastMatch = null;
     }
 
