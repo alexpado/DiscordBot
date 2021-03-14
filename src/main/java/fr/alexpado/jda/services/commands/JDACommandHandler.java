@@ -182,9 +182,14 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
                 this.send(event.getChannel(), builder);
             } catch (InvocationTargetException e) {
                 Throwable reportable = e.getCause();
-                this.report(event, label, reportable);
-                EmbedBuilder builder = this.bot.getCommandHelper().onException(event, reportable);
-                this.send(event.getChannel(), builder);
+
+                if (reportable instanceof FriendlyException) {
+                    this.send(event.getChannel(), ((FriendlyException) reportable).toEmbed());
+                } else {
+                    this.report(event, label, reportable);
+                    EmbedBuilder builder = this.bot.getCommandHelper().onException(event, reportable);
+                    this.send(event.getChannel(), builder);
+                }
             } catch (Exception e) {
                 this.report(event, label, e);
                 EmbedBuilder builder = this.bot.getCommandHelper().onException(event, e);
