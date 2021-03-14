@@ -149,43 +149,45 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
             return;
         }
 
-        try {
-            ICommandContext context = this.getBot().getCommandHelper().createContext(event);
-            Object          result  = command.execute(context);
+        new Thread(() -> {
+            try {
+                ICommandContext context = this.getBot().getCommandHelper().createContext(event);
+                Object          result  = command.execute(context);
 
-            if (context instanceof AutoCloseable) {
-                ((AutoCloseable) context).close();
-            }
+                if (context instanceof AutoCloseable) {
+                    ((AutoCloseable) context).close();
+                }
 
-            if (result instanceof MessageBuilder) {
-                MessageBuilder builder = (MessageBuilder) result;
-                event.getChannel().sendMessage(builder.build()).queue();
-            } else if (result instanceof EmbedBuilder) {
-                EmbedBuilder builder = (EmbedBuilder) result;
+                if (result instanceof MessageBuilder) {
+                    MessageBuilder builder = (MessageBuilder) result;
+                    event.getChannel().sendMessage(builder.build()).queue();
+                } else if (result instanceof EmbedBuilder) {
+                    EmbedBuilder builder = (EmbedBuilder) result;
+                    this.send(event.getChannel(), builder);
+                } else if (result instanceof EmbedPage) {
+                    IEmbedPage<?> page = (IEmbedPage<?>) result;
+                    event.getChannel()
+                         .sendMessage(new EmbedBuilder().setDescription("...").build())
+                         .queue(page::setMessage);
+                } else if (result instanceof String) {
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder.setDescription(((CharSequence) result));
+                    this.send(event.getChannel(), builder);
+                }
+            } catch (SyntaxException e) {
+                EmbedBuilder builder = this.getBot().getCommandHelper().onSyntaxError(command, event);
                 this.send(event.getChannel(), builder);
-            } else if (result instanceof EmbedPage) {
-                IEmbedPage<?> page = (IEmbedPage<?>) result;
-                event.getChannel()
-                     .sendMessage(new EmbedBuilder().setDescription("...").build())
-                     .queue(page::setMessage);
-            } else if (result instanceof String) {
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setDescription(((CharSequence) result));
+            } catch (InvocationTargetException e) {
+                Throwable reportable = e.getCause();
+                this.report(event, label, reportable);
+                EmbedBuilder builder = this.bot.getCommandHelper().onException(event, reportable);
+                this.send(event.getChannel(), builder);
+            } catch (Exception e) {
+                this.report(event, label, e);
+                EmbedBuilder builder = this.bot.getCommandHelper().onException(event, e);
                 this.send(event.getChannel(), builder);
             }
-        } catch (SyntaxException e) {
-            EmbedBuilder builder = this.getBot().getCommandHelper().onSyntaxError(command, event);
-            this.send(event.getChannel(), builder);
-        } catch (InvocationTargetException e) {
-            Throwable reportable = e.getCause();
-            this.report(event, label, reportable);
-            EmbedBuilder builder = this.bot.getCommandHelper().onException(event, reportable);
-            this.send(event.getChannel(), builder);
-        } catch (Exception e) {
-            this.report(event, label, e);
-            EmbedBuilder builder = this.bot.getCommandHelper().onException(event, e);
-            this.send(event.getChannel(), builder);
-        }
+        }).start();
 
     }
 
