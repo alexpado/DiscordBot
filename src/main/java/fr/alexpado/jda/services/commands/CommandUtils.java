@@ -54,6 +54,8 @@ final class CommandUtils {
                 }
             } else if (paramTypeMap.containsKey(parameter.getType())) {
                 methodParameters.add(paramTypeMap.get(parameter.getType()));
+            } else if (parameter.getType().isInstance(context)) {
+                methodParameters.add(context);
             }
         }
 
