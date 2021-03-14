@@ -1,6 +1,7 @@
 package fr.alexpado.jda.services.commands;
 
 import fr.alexpado.jda.interfaces.IDiscordBot;
+import fr.alexpado.jda.services.commands.exceptions.FriendlyException;
 import fr.alexpado.jda.services.commands.exceptions.SyntaxException;
 import fr.alexpado.jda.services.commands.impl.CommandEventImpl;
 import fr.alexpado.jda.services.commands.interfaces.ICommand;
@@ -174,6 +175,8 @@ public class JDACommandHandler extends ListenerAdapter implements ICommandHandle
                     builder.setDescription(((CharSequence) result));
                     this.send(event.getChannel(), builder);
                 }
+            } catch (FriendlyException e) {
+                this.send(event.getChannel(), e.toEmbed());
             } catch (SyntaxException e) {
                 EmbedBuilder builder = this.getBot().getCommandHelper().onSyntaxError(command, event);
                 this.send(event.getChannel(), builder);
