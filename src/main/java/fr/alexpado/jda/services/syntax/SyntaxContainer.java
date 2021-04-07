@@ -112,6 +112,10 @@ public class SyntaxContainer implements ISyntaxContainer {
 
         this.matches.clear();
 
+        if (data.size() < this.syntaxList.size()) {
+            return false;
+        }
+
         for (int i = 0 ; i < data.size() ; i++) {
             ISyntax syntax   = this.syntaxList.get(i);
             String  argument = data.get(i);
